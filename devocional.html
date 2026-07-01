@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manantial — Devocional de Hoy</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep: #0d2b3e;
+    --water: #1c5d7a;
+    --current: #4a9bb5;
+    --foam: #eef6f5;
+    --leaf: #5a8f6b;
+    --light: #f7f4ec;
+    --sand: #d9cfb8;
+    --ink: #16302f;
+    --gold: #b8923f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--light);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .water-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 260px;
+    background: linear-gradient(180deg, var(--deep) 0%, var(--water) 60%, var(--current) 100%);
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .ripple {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 50%;
+    animation: rippleOut 8s ease-out infinite;
+  }
+
+  .ripple:nth-child(1) { width: 60px; height: 60px; left: 20%; top: 30%; animation-delay: 0s; }
+  .ripple:nth-child(2) { width: 80px; height: 80px; left: 65%; top: 45%; animation-delay: 2.5s; }
+  .ripple:nth-child(3) { width: 50px; height: 50px; left: 40%; top: 15%; animation-delay: 5s; }
+
+  @keyframes rippleOut {
+    0% { transform: scale(0.3); opacity: 0.6; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ripple { animation: none; display: none; }
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 56px 24px 36px;
+    color: var(--foam);
+  }
+
+  .header-eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(238,246,245,0.65);
+    margin-bottom: 18px;
+  }
+
+  .header-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.15;
+  }
+
+  .header-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--current);
+  }
+
+  .header-date {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: rgba(238,246,245,0.7);
+    text-transform: capitalize;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: -28px auto 0;
+    padding: 0 20px 80px;
+  }
+
+  /* DEVOTIONAL CARD */
+  .devotional-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow: 0 20px 50px rgba(13,43,62,0.15);
+    margin-bottom: 24px;
+  }
+
+  .verse-block {
+    border-left: 3px solid var(--gold);
+    padding-left: 20px;
+    margin-bottom: 28px;
+  }
+
+  .verse-text {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--deep);
+    margin-bottom: 10px;
+  }
+
+  .verse-ref {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .devotional-body {
+    font-size: 0.98rem;
+    line-height: 1.85;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .devotional-body p { margin-bottom: 16px; }
+
+  .application-box {
+    background: var(--foam);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+
+  .application-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--water);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .application-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* SOURCE BADGE */
+  .source-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f4f3;
+  }
+
+  .source-badge img, .source-badge .badge-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--water);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Dancing Script', cursive;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .source-text {
+    font-size: 0.78rem;
+    color: #7a9490;
+  }
+
+  .source-text strong { color: var(--water); }
+
+  /* ACTION BUTTONS */
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--foam);
+    color: var(--water);
+    border: none;
+    border-radius: 100px;
+    padding: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+  }
+
+  .action-btn:hover { background: var(--water); color: white; }
+
+  .action-btn.primary {
+    background: var(--leaf);
+    color: white;
+  }
+
+  .action-btn.primary:hover { background: #487a57; }
+
+  /* ARCHIVE LINK */
+  .archive-section {
+    text-align: center;
+  }
+
+  .archive-link {
+    color: var(--water);
+    font-size: 0.88rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* === PASTOR'S UPDATE PANEL (hidden by default) === */
+  .pastor-panel {
+    display: none;
+    background: #fff8ed;
+    border: 1.5px solid #e8d9b5;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+
+  .pastor-panel.active { display: block; }
+
+  .pastor-panel-title {
+    font-weight: 600;
+    color: #8a6d2f;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+  }
+
+  .pastor-field {
+    margin-bottom: 14px;
+  }
+
+  .pastor-field label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #a08850;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .pastor-field input, .pastor-field textarea {
+    width: 100%;
+    border: 1.5px solid #e8d9b5;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    font-family: 'Inter', sans-serif;
+    background: white;
+  }
+
+  .pastor-field textarea { min-height: 90px; resize: vertical; }
+
+  .pastor-update-btn {
+    width: 100%;
+    background: #b8923f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.88rem;
+  }
+
+  .mod-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--deep);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 12px 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(13,43,62,0.3);
+    z-index: 10;
+    font-family: 'Inter', sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 40px 20px 28px; }
+    .devotional-card { padding: 28px 22px; }
+    .actions { flex-direction: column; }
+    .mod-toggle { bottom: 16px; right: 16px; padding: 10px 16px; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="water-bg">
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+</div>
+
+<header>
+  <p class="header-eyebrow">Manantial</p>
+  <h1 class="header-title">El devocional<br><em>de hoy</em></h1>
+  <p class="header-date" id="todayDate"></p>
+</header>
+
+<main>
+
+  <!-- PASTOR'S UPDATE PANEL -->
+  <div class="pastor-panel" id="pastorPanel">
+    <p class="pastor-panel-title">✏️ Actualizar el devocional de hoy</p>
+    <div class="pastor-field">
+      <label>Versículo</label>
+      <textarea id="inputVerse">"El que confía en el Señor es como el árbol plantado junto al agua, que extiende sus raíces hacia la corriente."</textarea>
+    </div>
+    <div class="pastor-field">
+      <label>Referencia</label>
+      <input type="text" id="inputRef" value="Jeremías 17:7-8">
+    </div>
+    <div class="pastor-field">
+      <label>Reflexión (puedes pegar el mismo texto que usaste en Perseverare)</label>
+      <textarea id="inputBody" style="min-height: 140px;">Hay árboles que el viento dobla pero no rompe. Su secreto no está en su rigidez — está en sus raíces. Raíces que van más profundo que la tormenta, más abajo que el miedo, hasta encontrar agua viva que no se agota.
+
+¿Dónde están tus raíces hoy? ¿En lo que ves, en lo que tienes, en lo que otros dicen de ti? O en Aquel que sostiene todo — incluso cuando el viento arrecia y el suelo tiembla.</textarea>
+    </div>
+    <div class="pastor-field">
+      <label>Aplicación práctica</label>
+      <textarea id="inputApplication">Hoy, antes de reaccionar a lo que te inquiete, haz una pausa de 60 segundos y pregúntate: "¿desde dónde estoy respondiendo — desde el miedo o desde la raíz?"</textarea>
+    </div>
+    <button class="pastor-update-btn" onclick="updateDevotional()">Publicar este devocional</button>
+  </div>
+
+  <!-- THE DEVOTIONAL -->
+  <div class="devotional-card">
+    <div class="verse-block">
+      <p class="verse-text" id="displayVerse">"El que confía en el Señor es como el árbol plantado junto al agua, que extiende sus raíces hacia la corriente."</p>
+      <p class="verse-ref" id="displayRef">Jeremías 17:7-8</p>
+    </div>
+
+    <div class="devotional-body" id="displayBody">
+      <p>Hay árboles que el viento dobla pero no rompe. Su secreto no está en su rigidez — está en sus raíces. Raíces que van más profundo que la tormenta, más abajo que el miedo, hasta encontrar agua viva que no se agota.</p>
+      <p>¿Dónde están tus raíces hoy? ¿En lo que ves, en lo que tienes, en lo que otros dicen de ti? O en Aquel que sostiene todo — incluso cuando el viento arrecia y el suelo tiembla.</p>
+    </div>
+
+    <div class="application-box">
+      <p class="application-title">🌱 Aplicación de hoy</p>
+      <p class="application-text" id="displayApplication">Hoy, antes de reaccionar a lo que te inquiete, haz una pausa de 60 segundos y pregúntate: "¿desde dónde estoy respondiendo — desde el miedo o desde la raíz?"</p>
+    </div>
+
+    <div class="source-badge">
+      <div class="badge-icon">P+</div>
+      <p class="source-text">Este devocional también se publicó hoy en <strong>Perseverare Arte + Fe</strong></p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a href="https://wa.me/?text=Mira%20el%20devocional%20de%20hoy%20en%20Manantial" class="action-btn" target="_blank">
+      📲 Compartir
+    </a>
+    <a href="muro-oracion.html" class="action-btn primary">
+      🙏 Ir a orar
+    </a>
+  </div>
+
+  <div class="archive-section">
+    <span class="archive-link">Ver devocionales anteriores →</span>
+  </div>
+
+</main>
+
+<button class="mod-toggle" onclick="togglePastorPanel()">✏️ Actualizar devocional</button>
+
+<script>
+  // Display today's date in Spanish
+  const today = new Date();
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  document.getElementById('todayDate').textContent = today.toLocaleDateString('es-GT', options);
+
+  function togglePastorPanel() {
+    document.getElementById('pastorPanel').classList.toggle('active');
+  }
+
+  function updateDevotional() {
+    const verse = document.getElementById('inputVerse').value;
+    const ref = document.getElementById('inputRef').value;
+    const body = document.getElementById('inputBody').value;
+    const application = document.getElementById('inputApplication').value;
+
+    document.getElementById('displayVerse').textContent = verse;
+    document.getElementById('displayRef').textContent = ref;
+    document.getElementById('displayApplication').textContent = application;
+
+    // Split body into paragraphs
+    const bodyHtml = body.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+    document.getElementById('displayBody').innerHTML = bodyHtml;
+
+    document.getElementById('pastorPanel').classList.remove('active');
+    alert('Devocional actualizado. Ya está visible para la comunidad.');
+  }
+</script>
+
+</body>
+</html>

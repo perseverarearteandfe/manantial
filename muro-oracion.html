@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manantial — Muro de Oración</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep: #0d2b3e;
+    --water: #1c5d7a;
+    --current: #4a9bb5;
+    --foam: #eef6f5;
+    --leaf: #5a8f6b;
+    --light: #f7f4ec;
+    --ink: #16302f;
+    --gold: #b8923f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--light);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 32px;
+    background: rgba(247,244,236,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(13,43,62,0.08);
+  }
+
+  .nav-logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--deep);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .nav-logo .drop { color: var(--current); }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--water);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--deep); }
+  .nav-links a.active { color: var(--deep); font-weight: 600; }
+
+  .nav-cta {
+    background: var(--water);
+    color: white;
+    padding: 9px 20px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  @media (max-width: 800px) {
+    .nav-links { display: none; }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 78vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--deep) 0%, var(--water) 55%, var(--current) 100%);
+    padding-top: 70px;
+  }
+
+  .ripple {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    animation: rippleOut 10s ease-out infinite;
+  }
+
+  .ripple:nth-child(1) { width: 100px; height: 100px; left: 10%; top: 25%; animation-delay: 0s; }
+  .ripple:nth-child(2) { width: 140px; height: 140px; left: 75%; top: 55%; animation-delay: 3s; }
+  .ripple:nth-child(3) { width: 80px; height: 80px; left: 50%; top: 15%; animation-delay: 6s; }
+  .ripple:nth-child(4) { width: 120px; height: 120px; left: 85%; top: 10%; animation-delay: 1.5s; }
+
+  @keyframes rippleOut {
+    0% { transform: scale(0.2); opacity: 0.5; }
+    100% { transform: scale(4); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ripple { animation: none; display: none; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 80px 24px 60px;
+    color: var(--foam);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: rgba(238,246,245,0.6);
+    margin-bottom: 24px;
+  }
+
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(2.4rem, 6.5vw, 4rem);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--current);
+  }
+
+  .hero-verse {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.1rem;
+    max-width: 520px;
+    margin: 0 auto 36px;
+    line-height: 1.75;
+    color: rgba(238,246,245,0.88);
+  }
+
+  .hero-verse cite {
+    display: block;
+    margin-top: 12px;
+    font-style: normal;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--current);
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--foam);
+    color: var(--deep);
+    padding: 15px 32px;
+    border-radius: 100px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .btn-primary:hover { background: white; transform: translateY(-2px); }
+
+  .btn-secondary {
+    border: 1.5px solid rgba(238,246,245,0.4);
+    color: var(--foam);
+    padding: 15px 32px;
+    border-radius: 100px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .btn-secondary:hover { background: rgba(238,246,245,0.1); }
+
+  /* SHARE SECTION */
+  .share-section {
+    padding: 90px 32px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .section-eyebrow {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--water);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: var(--deep);
+    line-height: 1.25;
+  }
+
+  .form-card {
+    background: white;
+    border-radius: 22px;
+    padding: 40px;
+    border: 1px solid #e4ece9;
+    box-shadow: 0 4px 20px rgba(13,43,62,0.04);
+  }
+
+  .form-intro {
+    font-size: 0.95rem;
+    color: #5a7570;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--deep);
+    margin-bottom: 10px;
+    margin-top: 22px;
+  }
+
+  .field-label:first-of-type { margin-top: 0; }
+
+  .sobrenombres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .sobrenombre-chip {
+    background: var(--foam);
+    color: var(--water);
+    border: 1px solid #d9e7e4;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .sobrenombre-chip:hover { background: var(--current); color: white; border-color: var(--current); }
+  .sobrenombre-chip.selected { background: var(--water); color: white; border-color: var(--water); }
+
+  .field-input, .field-textarea, .field-select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d9e7e4;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--light);
+    transition: border-color 0.2s;
+  }
+
+  .field-input:focus, .field-textarea:focus, .field-select:focus {
+    outline: none;
+    border-color: var(--current);
+    background: white;
+  }
+
+  .field-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  .field-help {
+    font-size: 0.8rem;
+    color: #7a8f8b;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  .submit-btn {
+    background: var(--water);
+    color: white;
+    padding: 16px 28px;
+    border-radius: 100px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 28px;
+    transition: all 0.3s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .submit-btn:hover { background: var(--deep); transform: translateY(-2px); }
+
+  /* WALL SECTION */
+  .wall-section {
+    background: var(--foam);
+    padding: 90px 32px;
+  }
+
+  .wall-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .petitions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
+  }
+
+  .petition-card {
+    background: white;
+    border-radius: 18px;
+    padding: 26px;
+    border: 1px solid #d9e7e4;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s;
+  }
+
+  .petition-card:hover { box-shadow: 0 16px 32px rgba(13,43,62,0.08); transform: translateY(-2px); }
+
+  .petition-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 0.74rem;
+  }
+
+  .petition-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: var(--deep);
+    font-size: 0.95rem;
+  }
+
+  .petition-cat {
+    background: var(--foam);
+    color: var(--water);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.68rem;
+  }
+
+  .petition-text {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #4a5d5a;
+    margin-bottom: 18px;
+    flex: 1;
+  }
+
+  .petition-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid #eef3f1;
+  }
+
+  .petition-date {
+    font-size: 0.74rem;
+    color: #8a9d99;
+  }
+
+  .pray-btn {
+    background: transparent;
+    color: var(--water);
+    border: 1px solid #d9e7e4;
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pray-btn:hover { background: var(--water); color: white; border-color: var(--water); }
+  .pray-btn.prayed { background: var(--leaf); color: white; border-color: var(--leaf); }
+
+  /* HOW IT WORKS */
+  .how-section {
+    padding: 90px 32px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .step {
+    text-align: center;
+    padding: 28px 20px;
+  }
+
+  .step-num {
+    width: 48px;
+    height: 48px;
+    background: var(--foam);
+    color: var(--water);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+  }
+
+  .step-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--deep);
+    margin-bottom: 10px;
+  }
+
+  .step-desc {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: #5a7570;
+  }
+
+  /* FOOTER */
+  footer {
+    background: #0a1f2c;
+    padding: 64px 32px 40px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--foam);
+    margin-bottom: 6px;
+  }
+
+  .footer-logo .drop { color: var(--current); }
+
+  .footer-tagline {
+    font-size: 0.78rem;
+    color: rgba(238,246,245,0.4);
+    margin-bottom: 36px;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    font-size: 0.8rem;
+    color: rgba(238,246,245,0.6);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover { color: var(--current); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(238,246,245,0.08);
+    padding-top: 28px;
+    font-size: 0.76rem;
+    color: rgba(238,246,245,0.3);
+  }
+
+  @media (max-width: 800px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    nav { padding: 16px 20px; }
+    .share-section, .how-section { padding: 60px 20px; }
+    .wall-section { padding: 60px 20px; }
+    .form-card { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><span class="drop">💧</span> Manantial</a>
+  <ul class="nav-links">
+    <li><a href="consejeria.html">Consejería</a></li>
+    <li><a href="muro-oracion.html" class="active">Muro de Oración</a></li>
+    <li><a href="devocional.html">Devocional</a></li>
+    <li><a href="ofrendas.html">Ofrenda</a></li>
+  </ul>
+  <a href="consejeria.html" class="nav-cta">Hablar con el pastor</a>
+</nav>
+
+<section class="hero">
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Muro de Oración</p>
+    <h1 class="hero-title">Un lugar para<br><em>orar juntos</em></h1>
+    <p class="hero-verse">
+      "Confiesen sus pecados unos a otros, y oren unos por otros, para que sean sanados. La oración del justo es poderosa y eficaz."
+      <cite>— Santiago 5:16</cite>
+    </p>
+    <div class="hero-ctas">
+      <a href="#enviar" class="btn-primary">Enviar petición</a>
+      <a href="#muro" class="btn-secondary">Ver el muro</a>
+    </div>
+  </div>
+</section>
+
+<section id="enviar" class="share-section">
+  <div class="section-header">
+    <p class="section-eyebrow">Comparte tu petición</p>
+    <h2 class="section-title">Nadie está solo<br>en esto</h2>
+  </div>
+
+  <div class="form-card">
+    <p class="form-intro">
+      Escribe tu petición y elige un sobrenombre espiritual. El pastor la revisará antes de publicarla en el muro, para cuidar el espacio y a quienes lo habitan.
+    </p>
+
+    <label class="field-label">¿Cómo quieres llamarte?</label>
+    <div class="sobrenombres">
+      <button type="button" class="sobrenombre-chip" data-name="Rut">Rut</button>
+      <button type="button" class="sobrenombre-chip" data-name="Ester">Ester</button>
+      <button type="button" class="sobrenombre-chip" data-name="Sara">Sara</button>
+      <button type="button" class="sobrenombre-chip" data-name="David">David</button>
+      <button type="button" class="sobrenombre-chip" data-name="Jeremías">Jeremías</button>
+      <button type="button" class="sobrenombre-chip" data-name="Pablo">Pablo</button>
+    </div>
+    <input type="text" class="field-input" id="sobrenombre" placeholder="O escribe otro sobrenombre espiritual">
+    <p class="field-help">Evita sobrenombres que no honren tu dignidad — este es un espacio de confianza.</p>
+
+    <label class="field-label">¿De qué área es tu petición?</label>
+    <select class="field-select" id="categoria">
+      <option value="">Selecciona una categoría</option>
+      <option value="Salud">Salud</option>
+      <option value="Familia">Familia</option>
+      <option value="Trabajo">Trabajo y provisión</option>
+      <option value="Espiritual">Caminar espiritual</option>
+      <option value="Relaciones">Relaciones</option>
+      <option value="Gratitud">Acción de gracias</option>
+      <option value="Otro">Otro</option>
+    </select>
+
+    <label class="field-label">Cuenta lo que llevas en el corazón</label>
+    <textarea class="field-textarea" id="peticion" placeholder="Escribe tu petición con la libertad de hablar con un hermano..."></textarea>
+    <p class="field-help">No necesitas escribir mucho. Una línea sincera vale más que muchas palabras.</p>
+
+    <button type="button" class="submit-btn" id="enviarPeticion">
+      <span>Enviar al pastor por WhatsApp</span>
+      <span>→</span>
+    </button>
+  </div>
+</section>
+
+<section id="muro" class="wall-section">
+  <div class="wall-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Muro de Oración</p>
+      <h2 class="section-title">Oremos juntos<br>esta semana</h2>
+    </div>
+
+    <div class="petitions-grid">
+
+      <div class="petition-card">
+        <div class="petition-meta">
+          <span class="petition-name">Rut</span>
+          <span class="petition-cat">Salud</span>
+        </div>
+        <p class="petition-text">"Pido oración por mi madre que está atravesando una enfermedad difícil. Que el Señor sostenga su cuerpo y nuestro corazón."</p>
+        <div class="petition-footer">
+          <span class="petition-date">Hace 2 días</span>
+          <button class="pray-btn" onclick="orarPor(this)"><span>🙏</span> Orando</button>
+        </div>
+      </div>
+
+      <div class="petition-card">
+        <div class="petition-meta">
+          <span class="petition-name">David</span>
+          <span class="petition-cat">Familia</span>
+        </div>
+        <p class="petition-text">"Por restauración en mi matrimonio. Necesitamos sabiduría, paciencia y volver a vernos como al principio."</p>
+        <div class="petition-footer">
+          <span class="petition-date">Hace 4 días</span>
+          <button class="pray-btn" onclick="orarPor(this)"><span>🙏</span> Orando</button>
+        </div>
+      </div>
+
+      <div class="petition-card">
+        <div class="petition-meta">
+          <span class="petition-name">Ester</span>
+          <span class="petition-cat">Trabajo</span>
+        </div>
+        <p class="petition-text">"Busco empleo desde hace meses. Pido oración por puertas abiertas y por no perder la fe en medio de la espera."</p>
+        <div class="petition-footer">
+          <span class="petition-date">Hace 6 días</span>
+          <button class="pray-btn" onclick="orarPor(this)"><span>🙏</span> Orando</button>
+        </div>
+      </div>
+
+      <div class="petition-card">
+        <div class="petition-meta">
+          <span class="petition-name">Jeremías</span>
+          <span class="petition-cat">Espiritual</span>
+        </div>
+        <p class="petition-text">"Por sequedad espiritual. Quiero volver al primer amor y sentir de nuevo la cercanía del Señor en lo cotidiano."</p>
+        <div class="petition-footer">
+          <span class="petition-date">Hace 1 semana</span>
+          <button class="pray-btn" onclick="orarPor(this)"><span>🙏</span> Orando</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="how-section">
+  <div class="section-header">
+    <p class="section-eyebrow">Cómo funciona el muro</p>
+    <h2 class="section-title">Un espacio cuidado,<br>de principio a fin</h2>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3 class="step-title">Tú escribes</h3>
+      <p class="step-desc">Compartes tu petición con un sobrenombre espiritual. Tu identidad real queda protegida.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3 class="step-title">El pastor cuida</h3>
+      <p class="step-desc">Cada petición pasa por un filtro de oración y cuidado antes de aparecer en el muro.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3 class="step-title">La comunidad ora</h3>
+      <p class="step-desc">Otros creyentes leen tu petición y oran contigo. No estás solo en lo que llevas.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo"><span class="drop">💧</span> Manantial</div>
+  <p class="footer-tagline">Un ministerio de Perseverare Arte + Fe · Guatemala</p>
+
+  <div class="footer-links">
+    <a href="consejeria.html">Consejería</a>
+    <a href="muro-oracion.html">Muro de Oración</a>
+    <a href="devocional.html">Devocional</a>
+    <a href="ofrendas.html">Ofrenda</a>
+    <a href="https://perseverarearteandfe.github.io">Perseverare Arte + Fe</a>
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 Manantial · Guatemala City
+  </div>
+</footer>
+
+<script>
+  // Seleccionar sobrenombre
+  document.querySelectorAll('.sobrenombre-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.sobrenombre-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      document.getElementById('sobrenombre').value = chip.dataset.name;
+    });
+  });
+
+  // Limpiar selección si escribe en el input
+  document.getElementById('sobrenombre').addEventListener('input', () => {
+    document.querySelectorAll('.sobrenombre-chip').forEach(c => c.classList.remove('selected'));
+  });
+
+  // Enviar petición por WhatsApp
+  document.getElementById('enviarPeticion').addEventListener('click', () => {
+    const sobrenombre = document.getElementById('sobrenombre').value.trim();
+    const categoria = document.getElementById('categoria').value;
+    const peticion = document.getElementById('peticion').value.trim();
+
+    if (!sobrenombre) { alert('Por favor elige o escribe un sobrenombre.'); return; }
+    if (!peticion) { alert('Por favor escribe tu petición.'); return; }
+
+    const mensaje = `Hola pastor Jaime, quisiera compartir una petición para el Muro de Oración de Manantial.
+
+Sobrenombre: ${sobrenombre}
+${categoria ? `Categoría: ${categoria}\n` : ''}
+Petición:
+${peticion}
+
+Gracias por orar conmigo.`;
+
+    const url = `https://wa.me/50235680054?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+  });
+
+  // Botón "Orando"
+  function orarPor(btn) {
+    btn.classList.toggle('prayed');
+    btn.querySelector('span:last-child').textContent = btn.classList.contains('prayed') ? 'Orando ✓' : 'Orando';
+  }
+</script>
+
+</body>
+</html>

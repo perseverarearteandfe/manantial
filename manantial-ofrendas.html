@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manantial — Ofrenda</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep: #0d2b3e;
+    --water: #1c5d7a;
+    --current: #4a9bb5;
+    --foam: #eef6f5;
+    --leaf: #5a8f6b;
+    --light: #f7f4ec;
+    --sand: #d9cfb8;
+    --ink: #16302f;
+    --gold: #b8923f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--light);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .water-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 280px;
+    background: linear-gradient(180deg, var(--deep) 0%, var(--water) 60%, var(--current) 100%);
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .ripple {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 50%;
+    animation: rippleOut 8s ease-out infinite;
+  }
+
+  .ripple:nth-child(1) { width: 60px; height: 60px; left: 20%; top: 30%; animation-delay: 0s; }
+  .ripple:nth-child(2) { width: 80px; height: 80px; left: 65%; top: 45%; animation-delay: 2.5s; }
+  .ripple:nth-child(3) { width: 50px; height: 50px; left: 40%; top: 15%; animation-delay: 5s; }
+
+  @keyframes rippleOut {
+    0% { transform: scale(0.3); opacity: 0.6; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ripple { animation: none; display: none; }
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 56px 24px 40px;
+    color: var(--foam);
+  }
+
+  .header-eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(238,246,245,0.65);
+    margin-bottom: 18px;
+  }
+
+  .header-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .header-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--current);
+  }
+
+  .header-verse {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1rem;
+    max-width: 460px;
+    margin: 0 auto;
+    line-height: 1.7;
+    color: rgba(238,246,245,0.85);
+  }
+
+  .header-verse cite {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--current);
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: -32px auto 0;
+    padding: 0 20px 80px;
+  }
+
+  /* AMOUNT CARD */
+  .offering-card {
+    background: var(--foam);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 20px 50px rgba(13,43,62,0.18);
+    margin-bottom: 28px;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--deep);
+    margin-bottom: 6px;
+  }
+
+  .card-sub {
+    font-size: 0.85rem;
+    color: var(--water);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .field-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--water);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .amount-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .amount-btn {
+    border: 1.5px solid #d4e3e0;
+    background: white;
+    color: var(--deep);
+    border-radius: 12px;
+    padding: 16px 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Fraunces', serif;
+  }
+
+  .amount-btn:hover, .amount-btn.selected {
+    background: var(--water);
+    color: white;
+    border-color: var(--water);
+  }
+
+  .custom-amount {
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .custom-amount span {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--water);
+    font-weight: 600;
+    font-family: 'Fraunces', serif;
+  }
+
+  .custom-amount input {
+    width: 100%;
+    border: 1.5px solid #d4e3e0;
+    border-radius: 12px;
+    padding: 14px 16px 14px 36px;
+    font-size: 1.05rem;
+    font-family: 'Fraunces', serif;
+    color: var(--ink);
+    background: white;
+  }
+
+  .custom-amount input:focus { outline: none; border-color: var(--current); }
+
+  .name-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .chip {
+    border: 1.5px solid #d4e3e0;
+    background: white;
+    color: var(--water);
+    border-radius: 100px;
+    padding: 7px 16px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chip:hover, .chip.selected {
+    background: var(--water);
+    color: white;
+    border-color: var(--water);
+  }
+
+  input[type="text"] {
+    width: 100%;
+    border: 1.5px solid #d4e3e0;
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: white;
+    margin-top: 4px;
+  }
+
+  input[type="text"]:focus { outline: none; border-color: var(--current); }
+
+  .anon-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--water);
+  }
+
+  .anon-row input { width: auto; margin: 0; }
+
+  .name-section { margin-bottom: 24px; }
+
+  .continue-btn {
+    width: 100%;
+    background: var(--water);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .continue-btn:hover { background: var(--deep); }
+  .continue-btn:disabled { background: #c8d6d3; cursor: not-allowed; }
+
+  /* PAYMENT METHODS (shown after amount selected) */
+  .payment-section {
+    display: none;
+  }
+
+  .payment-section.active { display: block; }
+
+  .selected-amount-banner {
+    background: var(--deep);
+    color: white;
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .selected-amount-banner .amount {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  .selected-amount-banner button {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    border-radius: 100px;
+    padding: 7px 14px;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .methods-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .method-card {
+    background: white;
+    border: 1.5px solid #e4ece9;
+    border-radius: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .method-card:hover {
+    border-color: var(--current);
+    box-shadow: 0 8px 20px rgba(13,43,62,0.07);
+  }
+
+  .method-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .method-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .method-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--deep);
+  }
+
+  .method-desc {
+    font-size: 0.82rem;
+    color: #7a9490;
+    margin-left: 50px;
+  }
+
+  .method-details {
+    display: none;
+    margin-top: 14px;
+    margin-left: 50px;
+    padding-top: 14px;
+    border-top: 1px solid #f0f4f3;
+    font-size: 0.85rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .method-card.expanded .method-details { display: block; }
+
+  .copy-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--foam);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 6px;
+  }
+
+  .copy-row button {
+    background: var(--water);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+
+  .whatsapp-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #25d366;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 12px;
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    color: var(--water);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* RECENT GRATITUDE WALL */
+  .gratitude-wall {
+    margin-top: 36px;
+  }
+
+  .gratitude-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--deep);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .gratitude-item {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    color: var(--water);
+    border: 1px solid #e4ece9;
+  }
+
+  .gratitude-item strong { color: var(--deep); }
+
+  @media (max-width: 600px) {
+    header { padding: 40px 20px 32px; }
+    .offering-card { padding: 24px; }
+    .amount-grid { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="water-bg">
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+</div>
+
+<header>
+  <p class="header-eyebrow">Manantial</p>
+  <h1 class="header-title">Dar es parte<br><em>de florecer</em></h1>
+  <p class="header-verse">
+    "Cada uno dé como propuso en su corazón, no con tristeza ni por obligación, porque Dios ama al que da con alegría."
+    <cite>— 2 Corintios 9:7</cite>
+  </p>
+</header>
+
+<main>
+
+  <!-- STEP 1: AMOUNT + NAME -->
+  <div class="offering-card" id="step1">
+    <p class="card-title">Tu ofrenda voluntaria</p>
+    <p class="card-sub">Este es un gesto de gratitud, no una obligación. Da lo que tu corazón disponga.</p>
+
+    <label class="field-label">Elige un monto</label>
+    <div class="amount-grid" id="amountGrid">
+      <button class="amount-btn" data-amount="25">Q25</button>
+      <button class="amount-btn" data-amount="50">Q50</button>
+      <button class="amount-btn" data-amount="100">Q100</button>
+    </div>
+    <div class="custom-amount">
+      <span>Q</span>
+      <input type="text" id="customAmount" placeholder="Otro monto">
+    </div>
+
+    <div class="name-section">
+      <label class="field-label">¿Cómo te llamamos para agradecerte?</label>
+      <div class="name-chips" id="nameChips">
+        <button class="chip" data-name="Rut">Rut</button>
+        <button class="chip" data-name="Ester">Ester</button>
+        <button class="chip" data-name="Sara">Sara</button>
+        <button class="chip" data-name="David">David</button>
+        <button class="chip" data-name="Jeremías">Jeremías</button>
+        <button class="chip" data-name="Pablo">Pablo</button>
+      </div>
+      <input type="text" id="customName" placeholder="O escribe tu nombre o sobrenombre espiritual">
+      <div class="anon-row">
+        <input type="checkbox" id="anonCheck">
+        <label for="anonCheck">Prefiero dar de forma anónima</label>
+      </div>
+    </div>
+
+    <button class="continue-btn" id="continueBtn" onclick="goToPayment()" disabled>Continuar</button>
+  </div>
+
+  <!-- STEP 2: PAYMENT METHODS -->
+  <div class="payment-section" id="step2">
+    <div class="selected-amount-banner">
+      <span>Tu ofrenda: <span class="amount" id="bannerAmount">Q0</span></span>
+      <button onclick="backToStep1()">Cambiar</button>
+    </div>
+
+    <label class="field-label">Elige tu método de pago</label>
+    <div class="methods-grid">
+
+      <div class="method-card" onclick="toggleMethod(this)">
+        <div class="method-head">
+          <div class="method-icon" style="background:#003087; color:white;">💳</div>
+          <span class="method-name">BAC Credomatic</span>
+        </div>
+        <p class="method-desc">Transferencia a cuenta o BAC Compra Click</p>
+        <div class="method-details">
+          Cuenta monetaria: <div class="copy-row"><span>971443510</span><button onclick="copyText(event, '971443510')">Copiar</button></div>
+          A nombre de: Jaime Archila Rodríguez<br><br>
+          Después de transferir, confírmanos por WhatsApp con tu comprobante:
+          <a href="https://wa.me/50235680054?text=Hola,%20hice%20una%20ofrenda%20por%20BAC,%20adjunto%20comprobante" class="whatsapp-confirm" target="_blank">📲 Confirmar por WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="method-card" onclick="toggleMethod(this)">
+        <div class="method-head">
+          <div class="method-icon" style="background:#ffc439; color:#003087;">P</div>
+          <span class="method-name">PayPal</span>
+        </div>
+        <p class="method-desc">Pago internacional con tarjeta</p>
+        <div class="method-details">
+          <div class="copy-row"><span>perseverareglobal@gmail.com</span><button onclick="copyText(event, 'perseverareglobal@gmail.com')">Copiar</button></div>
+          Envía tu ofrenda a este correo de PayPal seleccionando "Enviar a amigos y familiares" para evitar comisiones.
+        </div>
+      </div>
+
+      <div class="method-card" style="opacity:0.55; cursor:not-allowed;" onclick="event.stopPropagation()">
+        <div class="method-head">
+          <div class="method-icon" style="background:#004f9e; color:white;">🏦</div>
+          <span class="method-name">Banrural</span>
+        </div>
+        <p class="method-desc">Próximamente disponible</p>
+      </div>
+
+      <div class="method-card" style="opacity:0.55; cursor:not-allowed;" onclick="event.stopPropagation()">
+        <div class="method-head">
+          <div class="method-icon" style="background:#0066b3; color:white;">📱</div>
+          <span class="method-name">Tigo Money</span>
+        </div>
+        <p class="method-desc">Próximamente disponible</p>
+      </div>
+
+    </div>
+
+    <span class="back-link" onclick="backToStep1()">← Cambiar monto o nombre</span>
+  </div>
+
+  <!-- GRATITUDE WALL -->
+  <div class="gratitude-wall">
+    <p class="gratitude-title">🙏 Gratitud reciente</p>
+    <div class="gratitude-item"><strong>Sara</strong> dio su ofrenda con un corazón agradecido — hace 1 hora</div>
+    <div class="gratitude-item"><strong>Anónimo</strong> sembró en este ministerio — hace 4 horas</div>
+    <div class="gratitude-item"><strong>David</strong> dio su ofrenda con un corazón agradecido — ayer</div>
+  </div>
+
+</main>
+
+<script>
+  let selectedAmount = null;
+  let selectedName = '';
+
+  document.querySelectorAll('.amount-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedAmount = btn.dataset.amount;
+      document.getElementById('customAmount').value = '';
+      checkContinue();
+    });
+  });
+
+  document.getElementById('customAmount').addEventListener('input', (e) => {
+    if (e.target.value) {
+      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+      selectedAmount = e.target.value;
+    }
+    checkContinue();
+  });
+
+  document.querySelectorAll('#nameChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#nameChips .chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedName = chip.dataset.name;
+      document.getElementById('customName').value = '';
+      document.getElementById('anonCheck').checked = false;
+      checkContinue();
+    });
+  });
+
+  document.getElementById('customName').addEventListener('input', (e) => {
+    if (e.target.value) {
+      document.querySelectorAll('#nameChips .chip').forEach(c => c.classList.remove('selected'));
+      selectedName = '';
+      document.getElementById('anonCheck').checked = false;
+    }
+    checkContinue();
+  });
+
+  document.getElementById('anonCheck').addEventListener('change', (e) => {
+    if (e.target.checked) {
+      document.querySelectorAll('#nameChips .chip').forEach(c => c.classList.remove('selected'));
+      document.getElementById('customName').value = '';
+      selectedName = '';
+    }
+    checkContinue();
+  });
+
+  function checkContinue() {
+    const customName = document.getElementById('customName').value.trim();
+    const anon = document.getElementById('anonCheck').checked;
+    const hasName = selectedName || customName || anon;
+    const hasAmount = selectedAmount && parseFloat(selectedAmount) > 0;
+    document.getElementById('continueBtn').disabled = !(hasAmount && hasName);
+  }
+
+  function goToPayment() {
+    const customAmount = document.getElementById('customAmount').value.trim();
+    const finalAmount = customAmount || selectedAmount;
+    document.getElementById('bannerAmount').textContent = 'Q' + finalAmount;
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').classList.add('active');
+  }
+
+  function backToStep1() {
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('step2').classList.remove('active');
+    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('expanded'));
+  }
+
+  function toggleMethod(card) {
+    const wasExpanded = card.classList.contains('expanded');
+    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('expanded'));
+    if (!wasExpanded) card.classList.add('expanded');
+  }
+
+  function copyText(event, text) {
+    event.stopPropagation();
+    navigator.clipboard.writeText(text);
+    const btn = event.target;
+    const original = btn.textContent;
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => btn.textContent = original, 1500);
+  }
+</script>
+
+</body>
+</html>
