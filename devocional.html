@@ -345,25 +345,31 @@
   <!-- PASTOR'S UPDATE PANEL -->
   <div class="pastor-panel" id="pastorPanel">
     <p class="pastor-panel-title">✏️ Actualizar el devocional de hoy</p>
+
+    <div class="pastor-field" id="tokenField">
+      <label>Token de GitHub (solo la primera vez, se guarda en este dispositivo)</label>
+      <input type="password" id="inputToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    </div>
+    <p id="tokenStatus" style="font-size:0.78rem;color:#7a9490;margin-bottom:14px;"></p>
+
     <div class="pastor-field">
       <label>Versículo</label>
-      <textarea id="inputVerse">"El que confía en el Señor es como el árbol plantado junto al agua, que extiende sus raíces hacia la corriente."</textarea>
+      <textarea id="inputVerse"></textarea>
     </div>
     <div class="pastor-field">
       <label>Referencia</label>
-      <input type="text" id="inputRef" value="Jeremías 17:7-8">
+      <input type="text" id="inputRef">
     </div>
     <div class="pastor-field">
       <label>Reflexión (puedes pegar el mismo texto que usaste en Perseverare)</label>
-      <textarea id="inputBody" style="min-height: 140px;">Hay árboles que el viento dobla pero no rompe. Su secreto no está en su rigidez — está en sus raíces. Raíces que van más profundo que la tormenta, más abajo que el miedo, hasta encontrar agua viva que no se agota.
-
-¿Dónde están tus raíces hoy? ¿En lo que ves, en lo que tienes, en lo que otros dicen de ti? O en Aquel que sostiene todo — incluso cuando el viento arrecia y el suelo tiembla.</textarea>
+      <textarea id="inputBody" style="min-height: 140px;"></textarea>
     </div>
     <div class="pastor-field">
       <label>Aplicación práctica</label>
-      <textarea id="inputApplication">Hoy, antes de reaccionar a lo que te inquiete, haz una pausa de 60 segundos y pregúntate: "¿desde dónde estoy respondiendo — desde el miedo o desde la raíz?"</textarea>
+      <textarea id="inputApplication"></textarea>
     </div>
-    <button class="pastor-update-btn" onclick="updateDevotional()">Publicar este devocional</button>
+    <button class="pastor-update-btn" id="publishBtn" onclick="updateDevotional()">Publicar este devocional</button>
+    <button class="pastor-update-btn" style="background:transparent;color:#a08850;margin-top:8px;" onclick="forgetToken()">Olvidar token guardado</button>
   </div>
 
   <!-- THE DEVOTIONAL -->
@@ -407,6 +413,13 @@
 <button class="mod-toggle" onclick="togglePastorPanel()">✏️ Actualizar devocional</button>
 
 <script>
+  // ==== CONFIGURACIÓN DEL REPOSITORIO ====
+  const GH_OWNER  = 'perseverarearteandfe';
+  const GH_REPO   = 'manantial';
+  const GH_BRANCH = 'main';
+  const DATA_PATH = 'devocional-data.json';
+  const TOKEN_KEY = 'manantial_gh_token';
+
   // Display today's date in Spanish
   const today = new Date();
   const options = { weekday: 'long', day: 'numeric', month: 'long' };
@@ -416,23 +429,138 @@
     document.getElementById('pastorPanel').classList.toggle('active');
   }
 
-  function updateDevotional() {
-    const verse = document.getElementById('inputVerse').value;
-    const ref = document.getElementById('inputRef').value;
-    const body = document.getElementById('inputBody').value;
-    const application = document.getElementById('inputApplication').value;
-
-    document.getElementById('displayVerse').textContent = verse;
-    document.getElementById('displayRef').textContent = ref;
-    document.getElementById('displayApplication').textContent = application;
-
-    // Split body into paragraphs
-    const bodyHtml = body.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
-    document.getElementById('displayBody').innerHTML = bodyHtml;
-
-    document.getElementById('pastorPanel').classList.remove('active');
-    alert('Devocional actualizado. Ya está visible para la comunidad.');
+  function refreshTokenUI() {
+    const saved = localStorage.getItem(TOKEN_KEY);
+    const status = document.getElementById('tokenStatus');
+    const field = document.getElementById('tokenField');
+    if (saved) {
+      field.style.display = 'none';
+      status.textContent = '🔑 Conectado a GitHub en este dispositivo.';
+    } else {
+      field.style.display = 'block';
+      status.textContent = '';
+    }
   }
+
+  function forgetToken() {
+    localStorage.removeItem(TOKEN_KEY);
+    document.getElementById('inputToken').value = '';
+    refreshTokenUI();
+    alert('Token olvidado. La próxima vez que publiques, se te pedirá de nuevo.');
+  }
+
+  function getToken() {
+    let token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      token = document.getElementById('inputToken').value.trim();
+      if (token) localStorage.setItem(TOKEN_KEY, token);
+    }
+    return token;
+  }
+
+  // Cargar el devocional actual desde el archivo de datos y llenar la pantalla + el panel
+  async function loadDevotional() {
+    try {
+      const res = await fetch(DATA_PATH + '?t=' + Date.now());
+      if (!res.ok) return; // si no existe aún, se queda con el contenido de respaldo del HTML
+      const data = await res.json();
+
+      document.getElementById('displayVerse').textContent = data.versiculo;
+      document.getElementById('displayRef').textContent = data.referencia;
+      document.getElementById('displayApplication').textContent = data.aplicacion;
+      document.getElementById('displayBody').innerHTML = data.cuerpo.map(p => `<p>${p}</p>`).join('');
+
+      document.getElementById('inputVerse').value = data.versiculo;
+      document.getElementById('inputRef').value = data.referencia;
+      document.getElementById('inputBody').value = data.cuerpo.join('\n\n');
+      document.getElementById('inputApplication').value = data.aplicacion;
+    } catch (e) {
+      console.warn('No se pudo cargar devocional-data.json, se muestra el contenido de respaldo.', e);
+    }
+  }
+
+  function b64EncodeUnicode(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  async function updateDevotional() {
+    const token = getToken();
+    if (!token) {
+      alert('Necesitas pegar tu token de GitHub primero (solo la primera vez).');
+      return;
+    }
+
+    const verse = document.getElementById('inputVerse').value.trim();
+    const ref = document.getElementById('inputRef').value.trim();
+    const body = document.getElementById('inputBody').value.trim();
+    const application = document.getElementById('inputApplication').value.trim();
+    const cuerpo = body.split('\n').map(p => p.trim()).filter(p => p);
+
+    const newData = {
+      fecha: new Date().toISOString().slice(0, 10),
+      versiculo: verse,
+      referencia: ref,
+      cuerpo: cuerpo,
+      aplicacion: application
+    };
+
+    const btn = document.getElementById('publishBtn');
+    btn.disabled = true;
+    btn.textContent = 'Publicando...';
+
+    const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json'
+    };
+
+    try {
+      // 1. Obtener el sha actual del archivo (si existe)
+      let sha = undefined;
+      const getRes = await fetch(`${apiUrl}?ref=${GH_BRANCH}`, { headers });
+      if (getRes.ok) {
+        const getData = await getRes.json();
+        sha = getData.sha;
+      } else if (getRes.status !== 404) {
+        const err = await getRes.json().catch(() => ({}));
+        throw new Error(err.message || `Error al leer el archivo (${getRes.status})`);
+      }
+
+      // 2. Publicar (crear o actualizar) el archivo de datos
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Actualizar devocional ${newData.fecha}`,
+          content: b64EncodeUnicode(JSON.stringify(newData, null, 2)),
+          branch: GH_BRANCH,
+          ...(sha ? { sha } : {})
+        })
+      });
+
+      if (!putRes.ok) {
+        const err = await putRes.json().catch(() => ({}));
+        throw new Error(err.message || `Error al publicar (${putRes.status})`);
+      }
+
+      // Reflejar el cambio en pantalla de inmediato
+      document.getElementById('displayVerse').textContent = verse;
+      document.getElementById('displayRef').textContent = ref;
+      document.getElementById('displayApplication').textContent = application;
+      document.getElementById('displayBody').innerHTML = cuerpo.map(p => `<p>${p}</p>`).join('');
+
+      document.getElementById('pastorPanel').classList.remove('active');
+      alert('✅ Devocional publicado. Estará visible para todos en menos de un minuto (GitHub Pages tarda un poco en actualizar).');
+    } catch (e) {
+      alert('❌ No se pudo publicar: ' + e.message + '\n\nRevisa que el token tenga permiso de escritura sobre este repositorio.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Publicar este devocional';
+    }
+  }
+
+  refreshTokenUI();
+  loadDevotional();
 </script>
 
 </body>
